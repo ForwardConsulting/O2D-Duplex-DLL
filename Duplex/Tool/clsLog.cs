@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Duplex.Tool
 {
-    class clsLog
+   public class clsLog
     {
         public enum Logger
         {
@@ -35,7 +35,7 @@ namespace Duplex.Tool
             ConStr = ConnectionString;
         }
 
-        internal void LogAlert(Logger LoggerModule, ErrorLevel CriticalLevel, ProcessCategory Category, string Message)
+        public void LogAlert(Logger LoggerModule, ErrorLevel CriticalLevel, ProcessCategory Category, string Message)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Duplex.Tool
         /// <param name="StartDate"></param>
         /// <param name="EndDate"></param>
         /// <returns></returns>
-        internal int LogProcessInsert(Logger LoggerModule, ProcessCategory Category, string Message, DateTime StartDate)
+        public int LogProcessInsert(Logger LoggerModule, ProcessCategory Category, string Message, DateTime StartDate)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace Duplex.Tool
                 throw new Exception($"Error on LogProcessInsert:{ex.Message}");
             }
         }
-        internal void LogProcessUpdate(int LogID,DateTime EndDate )
+        public void LogProcessUpdate(int LogID,DateTime EndDate )
         {
             try
             {

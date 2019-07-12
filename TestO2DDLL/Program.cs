@@ -2,6 +2,8 @@
 using System;
 using System.Data;
 using Duplex.Model;
+using Duplex.Tool;
+
 namespace TestO2DDLL
 {
     class Program
@@ -13,7 +15,21 @@ namespace TestO2DDLL
          */
         static DataTable DTOrder = new DataTable();
         static DataTable DTOrderItem = new DataTable();
+
         static void Main(string[] args)
+        {
+            testSFTP();
+        }
+        static void testSFTP()
+        {
+            clsSFTP sftp = new clsSFTP();
+            sftp.sftpIP = "ftptest.scg.com";
+            sftp.Sftpuser = "skico2dtest02";
+            sftp.Sftppwd = "kr0EtvFC";
+
+            sftp.DownloadLatestFile();
+        }
+        static void Main1(string[] args)
         {
             String ConStr;
 

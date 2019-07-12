@@ -219,6 +219,30 @@ namespace Duplex
                 throw new Exception($"Error on ArchiveCurrentOpeningInventory:{ex.Message}");
             }
         }
+
+        private void ArchiveInventoryMovement()
+        {
+            try
+            {
+                ClsConnection con = new ClsConnection(_conStr);
+                string strSql = string.Empty;
+                if (_currentInvDate < _txtInvDate)
+                {
+                    strSql = $"Insert into DT_InventoryMovementActualArchive" +
+                            $" Select d.*" +
+                            $" From DT_InventoryMovementActual d" +
+                            $" where d.MovementDate < {con.GetSqlFormat (_txtInvDate)}";
+                }
+
+                strSql += $"Delete From DT_InventoryMovementActual " +
+                        $" where MovementDate<{con.GetSqlFormat (_txtInvDate)}";
+                con.ExecuteNonQuery(strSql);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error on ArchiveInventoryMovement:{ex.Message}");
+            }
+        }
         private void ImportOpeningInvFromDT()
         {
             try
@@ -228,7 +252,7 @@ namespace Duplex
                 DataRow[] dr;
                 ClsConnection con = new ClsConnection(_conStr);
                 dr = _dtconv.Select($"MaterialID<>0 and WarehouseID<>0");
-                for (int i = 0; i < dr.GetUpperBound(0); i++)
+                for (int i = 0; i <= dr.GetUpperBound(0); i++)
                 {
                     newID = con.GetNextID("DT_InventoryOpening");
                     strSql = $"Insert into DT_InventoryOpening" +
@@ -269,6 +293,7 @@ namespace Duplex
                 return false;
             }
             ArchiveCurrentOpeningInventory();
+            ArchiveInventoryMovement();
             ImportOpeningInvFromDT();
             log.LogProcessUpdate(_LogprocessID, DateTime.Now);
 
