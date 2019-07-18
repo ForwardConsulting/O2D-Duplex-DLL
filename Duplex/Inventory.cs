@@ -133,6 +133,7 @@ namespace Duplex
 
                     dr = _dtconv.NewRow();
                     dr["MaterialID"] = cm.GetMaterialId(matCode, true);
+                    if ((int)dr["MaterialID"] == 0) { Console.WriteLine($"Matrial master not found for {matCode}"); }
                     dr["WarehouseID"] = cm.GetWarehouseID(wareHouse, true);
                     dr["weightkg"] = weightkg;
                     dr["UnitID"] = cm.GetUnitID(unit);
@@ -255,7 +256,7 @@ namespace Duplex
                 dr = _dtconv.Select($"MaterialID<>0 and WarehouseID<>0");
                 for (int i = 0; i <= dr.GetUpperBound(0); i++)
                 {
-                    Console.WriteLine($"Imporing Material {dr[i]["MaterialID"]}");
+                    Console.WriteLine($"Importing Material {dr[i]["MaterialID"]}");
                     newID = con.GetNextID("DT_InventoryOpening");
                     strSql = $"Insert into DT_InventoryOpening" +
                             $"(ID,WarehouseID,MaterialID,OpeningDate,OpenQty_InvU" +
