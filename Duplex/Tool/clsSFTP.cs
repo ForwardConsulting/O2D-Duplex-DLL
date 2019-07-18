@@ -45,15 +45,20 @@ namespace Duplex.Tool
         //    }
         //    return 0;
         //}
-        public int DownloadLatestFile()
+        public int DownloadLatestFile(Boolean IsDeleteAllFile = false )
         {
             try
             {
 
+                Console.WriteLine("Getting latest file");
+                if (GetLatestFile() != 0) { return 1; }
+                
 
-                GetLatestFile();
                 ConnectionInfo conInfo = new ConnectionInfo(_sftpIP, _sftpuser, new PasswordAuthenticationMethod(_sftpuser, _sftppwd));
                 if (_localFile == null) { _localFile = new FileInfo("C:\\Temp\\SAPSnapshot.txt"); }
+                DirectoryInfo fd = new DirectoryInfo(_localFile.DirectoryName);
+                if (fd.Exists==false) { fd.Create(); }
+
                 using (SftpClient sftp = new SftpClient(conInfo))
                 {
                     using (FileStream fstr = new FileStream(_localFile.FullName, FileMode.Create))
@@ -61,11 +66,14 @@ namespace Duplex.Tool
                         sftp.Connect();
                         sftp.ChangeDirectory($"/{_remotefolder}");
                         sftp.DownloadFile(_remotefileName, fstr);
-                        
+
                     }
-
-
                 }
+                if (IsDeleteAllFile==true )
+                {
+                    DeleteAllFile();
+                }
+
                 return 0;
             }
             catch (Exception ex)
@@ -74,14 +82,16 @@ namespace Duplex.Tool
                 throw new Exception($"Error on DownloadLatestFile:{ex.Message }");
             }
         }
-        public void GetLatestFile()
+        public int GetLatestFile()
         {
             try
             {
-              
+
 
                 ConnectionInfo conInfo = new ConnectionInfo(_sftpIP, _sftpuser, new PasswordAuthenticationMethod(_sftpuser, _sftppwd));
 
+                _remotefileName = string.Empty;
+                
                 using (SftpClient sftp = new SftpClient(conInfo))
                 {
                     sftp.Connect();
@@ -94,12 +104,49 @@ namespace Duplex.Tool
                         _remotefileName = item.Name;
                     }
 
+                    
+
                 }
+                if (_remotefileName == string.Empty)
+                {
+                    Console.WriteLine("No file found");
+                    return 1;
+                }
+                Console.WriteLine($"Latest file is {_remotefileName}");
+                return 0;
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error on GetLatestFileDate:{ex.Message }");
             }
         }
+
+        public int DeleteAllFile()
+        {
+            try
+            {
+                ConnectionInfo conInfo = new ConnectionInfo(_sftpIP, _sftpuser, new PasswordAuthenticationMethod(_sftpuser, _sftppwd));
+
+                using (SftpClient sftp = new SftpClient(conInfo))
+                {
+                    sftp.Connect();
+                    sftp.ChangeDirectory("/SKICO2D");
+                    IEnumerable<SftpFile> fs1;
+                    fs1 = sftp.ListDirectory("/SKICO2D");
+                    foreach (var item in fs1)
+                    {
+                        item.Delete();
+                    }
+
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error on DeleteAllFile:{ex.Message }");
+            }
+        }
+
+
     }
 }

@@ -25,33 +25,45 @@ namespace IMPORTSAPINVENTORY
         {
             //try
             //{
-           
 
+            Console.WriteLine("Get Configuration");
             GetConfig();
             Log = new clsLog(_conStr);
+            Console.WriteLine($"Connecting FTP {_ftpserver}...");
             clsSFTP sftp = new clsSFTP();
             sftp.sftpIP = _ftpserver;
             sftp.Sftpuser = _ftpuser;
             sftp.Sftppwd = _ftppassword;
             sftp.Remotefolder = _ftpFolder;
-            _logDownloadProcessid=Log.LogProcessInsert (clsLog.Logger.Inventory,clsLog.ProcessCategory.Inventory, "Start Download File from SFTP",DateTime.Now);
+            _logDownloadProcessid = Log.LogProcessInsert(clsLog.Logger.Inventory, clsLog.ProcessCategory.Inventory, "Start Download File from SFTP", DateTime.Now);
             try
             {
-                sftp.DownloadLatestFile();
+                Console.WriteLine("Trying to download file from FTP...");
+                if (sftp.DownloadLatestFile(true) != 0)
+                {
+                    Console.WriteLine("Problem on download file. So Quit job now");
+                    Log.LogAlert(clsLog.Logger.Inventory, clsLog.ErrorLevel.MiddleImpact, clsLog.ProcessCategory.Inventory, $"Problem found on Download file");
+                    return;
+                }
                 Log.LogProcessUpdate(_logDownloadProcessid, DateTime.Now);
+                Console.WriteLine("Download file success");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Download file has an error {ex.Message}");
                 Log.LogAlert(clsLog.Logger.Inventory, clsLog.ErrorLevel.MiddleImpact, clsLog.ProcessCategory.Inventory, $"Inventory snapshot download problem found:{ex.Message}");
             }
 
             try
             {
+                Console.WriteLine("Trying to import data into O2D inventory...");
                 Inventory inv = new Inventory(_conStr);
                 inv.ImportOpening(sftp.LocalFile);
+                Console.WriteLine("Import inventory is success");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error found on step ImportOpening:{ex.Message}");
                 Log.LogAlert(clsLog.Logger.Inventory, clsLog.ErrorLevel.MiddleImpact, clsLog.ProcessCategory.Inventory, $"Inventory snapshot IMPORT problem found:{ex.Message}");
             }
 

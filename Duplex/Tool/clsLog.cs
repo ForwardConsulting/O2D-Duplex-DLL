@@ -48,7 +48,7 @@ namespace Duplex.Tool
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error on LogAlert:{ex.Message}");
+                throw new Exception($"Error on LogAlert:{ex.Message}, Message is {Message}");
             }
         }
         /// <summary>

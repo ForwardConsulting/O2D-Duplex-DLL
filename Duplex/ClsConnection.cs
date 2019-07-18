@@ -34,6 +34,12 @@ namespace Duplex
                     goto FinalStep;
                 }
 
+                if (Double.TryParse(Convert.ToString(str), out tmpNum))
+                {
+                    result = Convert.ToString(tmpNum);
+                    goto FinalStep;
+                }
+
                 if (DateTime.TryParse(Convert.ToString(str), out tmpDate) == true)
                 {
                     yrtmp = Convert.ToString(tmpDate.Year);
@@ -46,11 +52,7 @@ namespace Duplex
                     goto FinalStep;
                 }
 
-                if (Double.TryParse (Convert.ToString(str),out tmpNum))
-                {
-                    result = Convert.ToString(tmpNum);
-                    goto FinalStep;
-                }
+                
 
                 result = $"'{Convert.ToString(str)}'";
 

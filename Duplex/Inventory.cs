@@ -153,6 +153,7 @@ namespace Duplex
         private Boolean IsValidDataContent(ref string Output)
         {
             //Check 1 date in file
+            Console.WriteLine("Start Validate data content");
             DateTime BaseDate = DateTime.Parse("2019/1/1");
             DateTime workDate = BaseDate;
             DateTime oldDate = BaseDate;
@@ -231,11 +232,11 @@ namespace Duplex
                     strSql = $"Insert into DT_InventoryMovementActualArchive" +
                             $" Select d.*" +
                             $" From DT_InventoryMovementActual d" +
-                            $" where d.MovementDate < {con.GetSqlFormat (_txtInvDate)}";
+                            $" where d.MovementDate < {con.GetSqlFormat(_txtInvDate)}";
                 }
 
                 strSql += $"Delete From DT_InventoryMovementActual " +
-                        $" where MovementDate<{con.GetSqlFormat (_txtInvDate)}";
+                        $" where MovementDate<{con.GetSqlFormat(_txtInvDate)}";
                 con.ExecuteNonQuery(strSql);
             }
             catch (Exception ex)
@@ -254,6 +255,7 @@ namespace Duplex
                 dr = _dtconv.Select($"MaterialID<>0 and WarehouseID<>0");
                 for (int i = 0; i <= dr.GetUpperBound(0); i++)
                 {
+                    Console.WriteLine($"Imporing Material {dr[i]["MaterialID"]}");
                     newID = con.GetNextID("DT_InventoryOpening");
                     strSql = $"Insert into DT_InventoryOpening" +
                             $"(ID,WarehouseID,MaterialID,OpeningDate,OpenQty_InvU" +
@@ -262,7 +264,15 @@ namespace Duplex
                             $",{con.GetSqlFormat(dr[i]["MaterialID"])},{con.GetSqlFormat(dr[i]["StockDate"])}" +
                             $",{con.GetSqlFormat(dr[i]["RollReamQty"])}" +
                             $",Getdate(),Getdate(),0,0);";
-                    con.ExecuteNonQuery(strSql);
+                    try
+                    {
+                        con.ExecuteNonQuery(strSql);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error while import Material {dr[i]["MaterialID"]} with message {ex.Message} on Sql {strSql}");
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -281,24 +291,33 @@ namespace Duplex
             EOF
               
              */
-
-            string msg = string.Empty;
-            clsLog log = new clsLog(_conStr);
-            _LogprocessID = log.LogProcessInsert(clsLog.Logger.Inventory, clsLog.ProcessCategory.Inventory,$"Import Inventory from SAP", DateTime.Now);
-            InitialDT();
-            FillDTContent();
-            if (IsValidDataContent(ref msg) == false)
+            try
             {
-                Output = $"Invalid DataContent:{msg}";
-                return false;
-            }
-            ArchiveCurrentOpeningInventory();
-            ArchiveInventoryMovement();
-            ImportOpeningInvFromDT();
-            log.LogProcessUpdate(_LogprocessID, DateTime.Now);
+                string msg = string.Empty;
+                clsLog log = new clsLog(_conStr);
+                _LogprocessID = log.LogProcessInsert(clsLog.Logger.Inventory, clsLog.ProcessCategory.Inventory, $"Import Inventory from SAP", DateTime.Now);
+                InitialDT();
+                FillDTContent();
+                if (IsValidDataContent(ref msg) == false)
+                {
+                    Output = $"Invalid DataContent:{msg}";
+                    return false;
+                }
+                Console.WriteLine("Start Archive Current Openinging Inventory ...");
+                ArchiveCurrentOpeningInventory();
+                Console.WriteLine("Start Archive Inventory Movement ...");
+                ArchiveInventoryMovement();
+                ImportOpeningInvFromDT();
+                log.LogProcessUpdate(_LogprocessID, DateTime.Now);
 
-            Output = "ok";
-            return true;
+                Output = "ok";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error on StartImportOpeningProcess:{ex.Message}");
+            }
+
         }
 
 
