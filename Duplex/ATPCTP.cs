@@ -1,4 +1,5 @@
 ﻿using Duplex.Model;
+using Duplex.Tool;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -7,6 +8,7 @@ namespace Duplex
 {
     public class ATPCTP
     {
+        private static clsLog log;
         private string _conStr;
         private DataSet _ds;
         public clsDTOrder DTOrder=new clsDTOrder();
@@ -30,6 +32,7 @@ namespace Duplex
         public ATPCTP(String connectionString)
         {
             ConStr = connectionString;
+            log = new clsLog(ConStr);
         }
         /// <summary>
         /// For caller to call for ATPCTP result.
@@ -42,6 +45,9 @@ namespace Duplex
         {
             try
             {
+                Console.WriteLine("Start Request ...");
+                int logID;
+                logID = log.LogProcessInsert(clsLog.Logger.ATPCTP, clsLog.ProcessCategory.RequestATPCTP, "ATPCTP Request", DateTime.Now);
                 _ds = new DataSet();
                 string procName = "proc_DUP_ATPCTPRequestSelect_4096";
                 DataTable dt1;
@@ -74,21 +80,27 @@ namespace Duplex
                 _ds.Tables[0].TableName = "DTOrderItem";
                 _ds.Tables[1].TableName = "DTOrderItemOperation";
                 _ds.Tables[2].TableName = "DTOrderItemOperationDetail";
-
+                log.LogProcessUpdate(logID, DateTime.Now);
+                Console.WriteLine("End ATPCTPRequest");
                 return _ds;
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine($"Error found on Request:{ex.Message}");
                 throw ex;
             }
 
         }
-        public bool Confirm(string ConfirmListID, int UserID)
+        public bool Confirm(clsDTConfirm DTConfirm, int UserID)
         {
             try
             {
+                Console.WriteLine("Start Confirm ... ");
+                int logID;
+                logID = log.LogProcessInsert(clsLog.Logger.ATPCTP, clsLog.ProcessCategory.ConfirmATPCTP, "ATPCTP Confrim", DateTime.Now);
                 string procName = "proc_DUP_ConfirmATPCTP_4322";
+                DataTable DT1 = DTConfirm.DT;
+
                 using (SqlConnection con = new SqlConnection(_conStr))
                 {
                     con.Open();
@@ -97,19 +109,32 @@ namespace Duplex
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
                         cmd.CommandTimeout = 30;
-                        cmd.Parameters.AddWithValue("@ConfirmList", ConfirmListID);
+                        cmd.Parameters.AddWithValue("@DTConfirm", DT1);
                         cmd.Parameters.AddWithValue("@UserID", UserID);
 
                         cmd.ExecuteNonQuery();
                     }
                 }
-
+                log.LogProcessUpdate(logID, DateTime.Now);
+                Console.WriteLine("End Confirm");
                 return true;
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                try
+                {
+                    log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.ConfirmATPCTP, $"Unable to Confirm ATCTP {ex.Message}");
+                }
+                catch (Exception)
+                {
+                    //nothing
+                }
+                finally
+                {
+                    Console.WriteLine($"Error found on Confirm {ex.Message}");
+                    throw ex;
+                }
+                
             }
 
 

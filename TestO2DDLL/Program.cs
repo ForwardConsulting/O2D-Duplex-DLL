@@ -18,7 +18,9 @@ namespace TestO2DDLL
 
         static void Main(string[] args)
         {
-            testSFTP();
+            //testSFTP();
+            Main_TestPLSRelease();
+
         }
         static void testSFTP()
         {
@@ -29,7 +31,7 @@ namespace TestO2DDLL
 
             sftp.DownloadLatestFile();
         }
-        static void Main1(string[] args)
+        static void Main_TestATPCTPRequest()
         {
             String ConStr;
 
@@ -38,23 +40,16 @@ namespace TestO2DDLL
             ConStr = t.GetConnectionString();
             
             d = new ATPCTP(ConStr);
-            clsDTOrder dtOrder = new clsDTOrder { Id = -1, Ordernumber = "Order-xxx", OrderHierarchyID = 2, BillToID = 111,PoNumber ="PO-xxx",ShipToID =222,ContractID =123,Remark ="Test Remark" ,UserID =9};
+            clsDTOrder dtOrder = new clsDTOrder { Id = -1, Ordernumber = "Order-xxx", OrderHierarchyID = 2, BillToID = 1000036, PoNumber ="PO-xxx",ShipToID =222,ContractID =123,Remark ="Test Remark" ,UserID =9};
             dtOrder.AddRow();
 
-            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = -1, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = Convert.ToDateTime("2019/10/10") };
+            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = -1, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = Convert.ToDateTime("2019/7/25") };
             dtOrderItem.AddRow();
 
             //ds = d.Request(1, 10, new DateTime (2019,6/7), 1, 0);
             try
             {
-               // bool result;
-                //PrepareParam();
-                //ds = d.Request(DTOrder, DTOrderItem, 1000000002);
                 ds = d.Request(dtOrder, dtOrderItem, 1000000002);
-
-
-                //confirm case
-                //result = d.Confirm("86", 9);
 
                 Console.WriteLine("done for " + ConStr);
             }
@@ -66,6 +61,36 @@ namespace TestO2DDLL
 
            
         }
+
+        static void Main_TestATPCTPConfirm()
+        {
+            String ConStr;
+
+            Cls_Connection t = new Cls_Connection();
+            ConStr = t.GetConnectionString();
+
+            d = new ATPCTP(ConStr);
+            clsDTConfirm DTConfirm = new clsDTConfirm { SolutionId = 198,Quantity=25 };
+            DTConfirm.AddRow();
+
+            d.Confirm(DTConfirm,UserID:99);
+
+        }
+
+        static void Main_TestPLSRelease()
+        {
+            String ConStr;
+
+
+            Cls_Connection t = new Cls_Connection();
+            ConStr = t.GetConnectionString();
+            PLSInterface d = new PLSInterface(ConStr);
+
+            d.OperationID = 1000000022;d.AddRow();
+            d.OperationID = 1000000023; d.AddRow();
+            d.ExportData();
+        }
+
         static void PrepareParam()
         {
             DTOrder.Columns.Add("ID", typeof(int));

@@ -8,7 +8,7 @@ namespace Duplex.Tool
     {
         public enum Logger
         {
-            Unspecified,Inventory, Order, ProductionPlan, Delivery
+           ATPCTP, Unspecified,Inventory, Order, ProductionPlan, Delivery,PLSInterface
         }
         public enum ErrorLevel
         {
@@ -21,7 +21,7 @@ namespace Duplex.Tool
         }
         public enum ProcessCategory
         {
-            Unspecified, Inventory, Order, ProductionPlan, Delivery
+           RequestATPCTP,ConfirmATPCTP, Unspecified, Inventory, Order, ProductionPlan, Delivery,Interface
         }
 
 
@@ -33,6 +33,8 @@ namespace Duplex.Tool
         public clsLog(string ConnectionString)
         {
             ConStr = ConnectionString;
+            //connection of log must be at O2D always
+            ConStr = ConStr.Replace("Initial Catalog=O2D_Dup", "Initial Catalog=O2D");
         }
 
         public void LogAlert(Logger LoggerModule, ErrorLevel CriticalLevel, ProcessCategory Category, string Message)

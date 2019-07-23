@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Duplex.Model
 {
-    class clsDTConfirm
+    public class clsDTConfirm
     {
         private int _solId;
         private decimal _quantity;
