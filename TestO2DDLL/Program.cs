@@ -19,7 +19,8 @@ namespace TestO2DDLL
         static void Main(string[] args)
         {
             //testSFTP();
-            Main_TestPLSRelease();
+            //Main_TestPLSRelease();
+            Main_TestATPCTPRequest();
 
         }
         static void testSFTP()
@@ -38,12 +39,15 @@ namespace TestO2DDLL
 
             Cls_Connection t = new Cls_Connection();
             ConStr = t.GetConnectionString();
-            
+            DateTime OrderreqDate = DateTime.Today.AddDays(1d);
+
             d = new ATPCTP(ConStr);
+
+
             clsDTOrder dtOrder = new clsDTOrder { Id = -1, Ordernumber = "Order-xxx", OrderHierarchyID = 2, BillToID = 1000036, PoNumber ="PO-xxx",ShipToID =222,ContractID =123,Remark ="Test Remark" ,UserID =9};
             dtOrder.AddRow();
 
-            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = -1, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = Convert.ToDateTime("2019/7/25") };
+            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = -1, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = OrderreqDate };
             dtOrderItem.AddRow();
 
             //ds = d.Request(1, 10, new DateTime (2019,6/7), 1, 0);
