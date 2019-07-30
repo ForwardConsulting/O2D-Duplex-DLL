@@ -20,7 +20,8 @@ namespace TestO2DDLL
         {
             //testSFTP();
             //Main_TestPLSRelease();
-            Main_TestATPCTPRequest();
+            //Main_TestATPCTPRequest();
+            Main_TestATPCTPRequest2();
 
         }
         static void testSFTP()
@@ -32,6 +33,41 @@ namespace TestO2DDLL
 
             sftp.DownloadLatestFile();
         }
+
+        static void Main_TestATPCTPRequest2()
+        {
+            String ConStr;
+
+
+            Cls_Connection t = new Cls_Connection();
+            ConStr = t.GetConnectionString();
+            DateTime OrderreqDate = DateTime.Today.AddDays(1d);
+
+            d = new ATPCTP(ConStr);
+
+
+            clsDTOrder dtOrder = new clsDTOrder { Id = 1000000049, Ordernumber = "Order-xxx", OrderHierarchyID = 2, BillToID = 1000036, PoNumber = "PO-xxx", ShipToID = 222, ContractID = 123, Remark = "Test Remark", UserID = 99 };
+            dtOrder.AddRow();
+
+            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = -1, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = OrderreqDate };
+            dtOrderItem.AddRow();
+
+            //ds = d.Request(1, 10, new DateTime (2019,6/7), 1, 0);
+            try
+            {
+                ds = d.Request(dtOrder, dtOrderItem, 1000000002);
+
+                Console.WriteLine("done for " + ConStr);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error found:" + ex.Message);
+            }
+
+
+
+        }
+
         static void Main_TestATPCTPRequest()
         {
             String ConStr;
