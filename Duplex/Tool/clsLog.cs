@@ -30,10 +30,10 @@ namespace Duplex.Tool
         public string ConStr { get => _conStr; set => _conStr = value; }
 
 
-        public clsLog(string ConnectionString)
+        public clsLog(string StdO2DConnectionString)
         {
-            ConStr = ConnectionString;
-            //connection of log must be at O2D always
+            ConStr = StdO2DConnectionString;
+            //connection of log must be at O2D always.. replace this just in case of wrong sending
             ConStr = ConStr.Replace("Initial Catalog=O2D_Dup", "Initial Catalog=O2D");
         }
 

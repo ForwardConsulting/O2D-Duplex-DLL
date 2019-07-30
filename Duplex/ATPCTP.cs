@@ -29,10 +29,10 @@ namespace Duplex
         //public string ConStr { get => _conStr; set => _conStr = value; }
 
 
-        public ATPCTP(String connectionString)
+        public ATPCTP(String customDBconnectionString,String StdDBConnectionString)
         {
-            ConStr = connectionString;
-            log = new clsLog(ConStr);
+            ConStr = customDBconnectionString;
+            log = new clsLog(StdDBConnectionString);
         }
         /// <summary>
         /// For caller to call for ATPCTP result.

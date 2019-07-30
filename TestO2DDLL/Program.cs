@@ -36,28 +36,59 @@ namespace TestO2DDLL
 
         static void Main_TestATPCTPRequest2()
         {
-            String ConStr;
-
+            String ConStrCustom;
+            String ConstrStd;
 
             Cls_Connection t = new Cls_Connection();
-            ConStr = t.GetConnectionString();
+            ConStrCustom = t.GetConnectionString_Custom();
+            ConstrStd = t.GetConnectionString_Std();
             DateTime OrderreqDate = DateTime.Today.AddDays(1d);
 
-            d = new ATPCTP(ConStr);
+            d = new ATPCTP(ConStrCustom, ConstrStd);
 
 
-            clsDTOrder dtOrder = new clsDTOrder { Id = 1000000049, Ordernumber = "Order-xxx", OrderHierarchyID = 2, BillToID = 1000036, PoNumber = "PO-xxx", ShipToID = 222, ContractID = 123, Remark = "Test Remark", UserID = 99 };
-            dtOrder.AddRow();
+            //clsDTOrder dtOrder = new clsDTOrder { Id = 1000000070, Ordernumber = "OD-190727-0004", OrderHierarchyID = 1000000065, BillToID = 5, PoNumber = "PO-xxx", ShipToID = 222, ContractID = 123, Remark = "Test Remark", UserID = 99 };
+            //dtOrder.AddRow();
 
-            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = -1, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = OrderreqDate };
-            dtOrderItem.AddRow();
+            //clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = 1000000070, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = OrderreqDate };
+            //dtOrderItem.AddRow();
 
             //ds = d.Request(1, 10, new DateTime (2019,6/7), 1, 0);
+
+            clsDTOrder dtOrder = new clsDTOrder
+            {
+                Id = 1000000070,
+                Ordernumber = "OD-190727-0004",
+                OrderHierarchyID = 1000000065,
+                BillToID = 5,
+                PoNumber = "po-ppppp",
+                ShipToID = 222,
+                ContractID = 123,
+                Remark = "ssss",
+                UserID = 9
+            };
+            dtOrder.AddRow();
+
+            clsDTOrderItem dtOrderItem = new clsDTOrderItem
+            {
+                Id = -1,
+                OrderID = 1000000070,
+                ItemNumber = 10,
+                MaterialID = 1000000034,
+                ShiptoID = 111,
+                ContractID = 222,
+                RequestQTY_OrdU = 20,
+                RequestDate = OrderreqDate,
+                InsertUserID = 9
+               
+            };
+            dtOrderItem.AddRow();
+
             try
             {
                 ds = d.Request(dtOrder, dtOrderItem, 1000000002);
 
-                Console.WriteLine("done for " + ConStr);
+                Console.WriteLine("done for " + ConStrCustom);
             }
             catch (Exception ex)
             {
@@ -70,14 +101,15 @@ namespace TestO2DDLL
 
         static void Main_TestATPCTPRequest()
         {
-            String ConStr;
-
+            String ConStrCustom;
+            String ConstrStd;
 
             Cls_Connection t = new Cls_Connection();
-            ConStr = t.GetConnectionString();
+            ConStrCustom = t.GetConnectionString_Custom();
+            ConstrStd = t.GetConnectionString_Std();
             DateTime OrderreqDate = DateTime.Today.AddDays(1d);
 
-            d = new ATPCTP(ConStr);
+            d = new ATPCTP(ConStrCustom, ConstrStd);
 
 
             clsDTOrder dtOrder = new clsDTOrder { Id = -1, Ordernumber = "Order-xxx", OrderHierarchyID = 2, BillToID = 1000036, PoNumber ="PO-xxx",ShipToID =222,ContractID =123,Remark ="Test Remark" ,UserID =9};
@@ -91,7 +123,7 @@ namespace TestO2DDLL
             {
                 ds = d.Request(dtOrder, dtOrderItem, 1000000002);
 
-                Console.WriteLine("done for " + ConStr);
+                Console.WriteLine("done for " + ConStrCustom);
             }
             catch (Exception ex)
             {
@@ -104,12 +136,14 @@ namespace TestO2DDLL
 
         static void Main_TestATPCTPConfirm()
         {
-            String ConStr;
+            String ConStrCustom;
+            String ConstrStd;
 
             Cls_Connection t = new Cls_Connection();
-            ConStr = t.GetConnectionString();
+            ConStrCustom = t.GetConnectionString_Custom();
+            ConstrStd = t.GetConnectionString_Std();
 
-            d = new ATPCTP(ConStr);
+            d = new ATPCTP(ConStrCustom, ConstrStd);
             clsDTConfirm DTConfirm = new clsDTConfirm { SolutionId = 198,Quantity=25 };
             DTConfirm.AddRow();
 
@@ -119,12 +153,14 @@ namespace TestO2DDLL
 
         static void Main_TestPLSRelease()
         {
-            String ConStr;
+            String ConStrCustom;
+            String ConstrStd;
 
 
             Cls_Connection t = new Cls_Connection();
-            ConStr = t.GetConnectionString();
-            PLSInterface d = new PLSInterface(ConStr);
+            ConStrCustom = t.GetConnectionString_Custom();
+            ConstrStd = t.GetConnectionString_Std();
+            PLSInterface d = new PLSInterface(ConStrCustom);
 
             d.OperationID = 1000000022;d.AddRow();
             d.OperationID = 1000000023; d.AddRow();
