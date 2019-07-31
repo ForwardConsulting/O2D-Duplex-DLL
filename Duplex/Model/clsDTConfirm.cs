@@ -10,6 +10,7 @@ namespace Duplex.Model
         private int _solId;
         private decimal _quantity;
         private DataTable _dt;
+        private int _idCount=0;
         public int SolutionId { get => _solId; set => _solId = value; }
         public decimal Quantity { get => _quantity; set => _quantity = value; }
         public DataTable DT { get => _dt; }
@@ -26,7 +27,8 @@ namespace Duplex.Model
         {
             DataRow dr;
             dr = _dt.NewRow();
-            dr["SolutionID"] = _solId; dr["Quantity"] = _quantity;
+            _idCount += 1;
+             dr["SolutionID"] = _solId; dr["Quantity"] = _quantity;
 
             _dt.Rows.Add(dr);
         }
@@ -35,6 +37,7 @@ namespace Duplex.Model
             _dt = new DataTable();
             DataColumn[] dc = new DataColumn[]
             {
+                //new DataColumn ("ID",typeof(int)),
                 new DataColumn("SolutionID",typeof(int)),
                 new DataColumn("Quantity",typeof(decimal)),
             };
