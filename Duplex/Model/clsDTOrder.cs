@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Text;
 
@@ -12,8 +13,8 @@ namespace Duplex.Model
         private int _orderHierarchyID;
         private int _billToID;
         private string _poNumber;
-        private int _shipToID;
-        private int _contractID;
+        private int? _shipToID;
+        private int? _contractID;
         private string _remark;
         private string _propertyCaption;
         private string _propertyValue;
@@ -24,12 +25,13 @@ namespace Duplex.Model
 
 
         public int Id { get => _id; set => _id = value; }
+
         public string Ordernumber { get => _ordernumber; set => _ordernumber = value; }
         public int OrderHierarchyID { get => _orderHierarchyID; set => _orderHierarchyID = value; }
         public int BillToID { get => _billToID; set => _billToID = value; }
         public string PoNumber { get => _poNumber; set => _poNumber = value; }
-        public int ShipToID { get => _shipToID; set => _shipToID = value; }
-        public int ContractID { get => _contractID; set => _contractID = value; }
+        public int? ShipToID { get => _shipToID; set => _shipToID = value; }
+        public int? ContractID { get => _contractID; set => _contractID = value; }
         public string Remark { get => _remark; set => _remark = value; }
         public string PropertyCaption { get => _propertyCaption; set => _propertyCaption = value; }
         public string PropertyValue { get => _propertyValue; set => _propertyValue = value; }

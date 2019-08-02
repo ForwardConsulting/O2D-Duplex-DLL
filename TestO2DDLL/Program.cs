@@ -21,9 +21,17 @@ namespace TestO2DDLL
             //testSFTP();
             //Main_TestPLSRelease();
             //Main_TestATPCTPRequest();
-            Main_TestATPCTPRequest2();
+            //Main_TestATPCTPRequest2();
             //Main_TestATPCTPConfirm();
+            t1();
         }
+
+        static void t1()
+        {
+            clsDTOrder xx = new clsDTOrder();
+
+        }
+
         static void testSFTP()
         {
             clsSFTP sftp = new clsSFTP();
@@ -87,7 +95,7 @@ namespace TestO2DDLL
 
             clsDTOrder dtOrder = new clsDTOrder
             {
-                Id = 1000000128,
+                Id = 1000000147,
                 Ordernumber = "OD-190731-0014",
                 OrderHierarchyID = 1000000065,
                 BillToID = 3,
@@ -104,7 +112,7 @@ namespace TestO2DDLL
                 Id = -1,
                 OrderID = 1000000128,
                 ItemNumber = 0,
-                MaterialID = 1000000013,
+                MaterialID = 1000000034,
                 ShiptoID = 0,
                 ContractID = 0,
                 RequestQTY_OrdU = 10,
@@ -177,6 +185,7 @@ namespace TestO2DDLL
         {
             String ConStrCustom;
             String ConstrStd;
+            string WarningMsg=string.Empty;
 
             Cls_Connection t = new Cls_Connection();
             ConStrCustom = t.GetConnectionString_Custom();
@@ -186,7 +195,15 @@ namespace TestO2DDLL
             clsDTConfirm DTConfirm = new clsDTConfirm { SolutionId = 2480, Quantity = 11 };
             DTConfirm.AddRow();
 
-            d.Confirm(DTConfirm, UserID: 99);
+            if (d.Confirm(DTConfirm, UserID: 99, ref WarningMsg)==true)
+            {
+                Console.WriteLine($"Confirm process is success");
+            }
+            else
+            {
+                Console.WriteLine($"WarningMsg:{WarningMsg}");
+            }
+            
 
         }
 

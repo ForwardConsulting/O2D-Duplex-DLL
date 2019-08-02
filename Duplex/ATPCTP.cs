@@ -95,13 +95,13 @@ namespace Duplex
             {
                 string errmsg = ex.Message;
                 string showerrmsg = string.Empty;
-                if (_ds!=null)
+                if (_ds != null)
                 {
                     _ds.Tables[0].TableName = "DTOrderItem";
                     _ds.Tables[1].TableName = "DTOrderItemOperation";
                     _ds.Tables[2].TableName = "DTOrderItemOperationDetail";
                 }
-                if (IsRealError(errmsg,ref showerrmsg)==true)
+                if (IsRealError(errmsg, ref showerrmsg) == true)
                 {
                     WarningMsg = string.Empty;
                     Console.WriteLine($"Error found on Request:{ex.Message}");
@@ -110,16 +110,16 @@ namespace Duplex
                 else
                 {
                     WarningMsg = showerrmsg;
-                    if (_ds.Tables.Count>0)
+                    if (_ds.Tables.Count > 0)
                     {
-                        if (_ds.Tables[0].Rows.Count ==0 && WarningMsg==string.Empty)
+                        if (_ds.Tables[0].Rows.Count == 0 && WarningMsg == string.Empty)
                         {
-                            WarningMsg ="No WIP found either in Balance inventory or Material Master";
+                            WarningMsg = "No WIP found either in Balance inventory or Material Master";
                         }
                     }
                     return _ds;
                 }
-                
+
             }
 
         }
@@ -128,7 +128,8 @@ namespace Duplex
             string[] errmsg;
             bool result = false;
             errmsg = ErrorMessage.Split(":");
-            if (errmsg.Length < 2) {
+            if (errmsg.Length < 2)
+            {
                 output = string.Empty;
                 return false;
             }
@@ -148,7 +149,7 @@ namespace Duplex
             return result;
 
         }
-        public bool Confirm(clsDTConfirm DTConfirm, int UserID)
+        public bool Confirm(clsDTConfirm DTConfirm, int UserID, ref string WarningMsg)
         {
             try
             {
@@ -167,7 +168,7 @@ namespace Duplex
                         cmd.CommandText = procName;
                         cmd.CommandTimeout = 30;
                         SqlParameter dtc;
-                        dtc=cmd.Parameters.Add("@DTConfirm",SqlDbType.Structured);
+                        dtc = cmd.Parameters.Add("@DTConfirm", SqlDbType.Structured);
                         dtc.Value = DT1;
                         dtc.TypeName = "dbo.DT_ConfirmATPCTP";
 
@@ -176,16 +177,29 @@ namespace Duplex
                         cmd.ExecuteNonQuery();
                     }
                 }
-               
+
                 log.LogProcessUpdate(logID, DateTime.Now);
                 Console.WriteLine("End Confirm");
                 return true;
             }
             catch (Exception ex)
             {
+                string errmsg = ex.Message;
+                string showerrmsg = string.Empty;
+                WarningMsg = errmsg;
                 try
                 {
-                    log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.ConfirmATPCTP, $"Unable to Confirm ATCTP {ex.Message}");
+                    log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.ConfirmATPCTP, $"Unable to Confirm ATCTP {errmsg}");
+                    if (IsRealError(errmsg, ref showerrmsg) == true)
+                    {
+                        WarningMsg = string.Empty;
+                        Console.WriteLine($"Error found on Request:{ex.Message}");
+                        throw ex;
+                    }
+                    else
+                    {
+                        WarningMsg = showerrmsg;
+                    }
                 }
                 catch (Exception)
                 {
@@ -196,7 +210,7 @@ namespace Duplex
                     Console.WriteLine($"Error found on Confirm {ex.Message}");
                     throw ex;
                 }
-                
+
             }
 
 
