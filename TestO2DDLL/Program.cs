@@ -19,7 +19,7 @@ namespace TestO2DDLL
         static void Main(string[] args)
         {
             //testSFTP();
-            //Main_TestPLSRelease();
+            Main_TestPLSRelease();
             //Main_TestATPCTPRequest();
             //Main_TestATPCTPRequest2();
             //Main_TestATPCTPConfirm();
@@ -211,16 +211,20 @@ namespace TestO2DDLL
         {
             String ConStrCustom;
             String ConstrStd;
+            string WarningMsg = string.Empty;
 
 
             Cls_Connection t = new Cls_Connection();
             ConStrCustom = t.GetConnectionString_Custom();
             ConstrStd = t.GetConnectionString_Std();
-            PLSInterface d = new PLSInterface(ConStrCustom);
+            PLSInterface d = new PLSInterface(ConStrCustom,ConstrStd);
 
-            d.OperationID = 1000000022; d.AddRow();
-            d.OperationID = 1000000023; d.AddRow();
-            d.ExportData();
+            d.OperationID = 1000000048; d.AddRow();
+            d.OperationID = 1000000049; d.AddRow();
+            if (d.ExportData(ref WarningMsg) == false)
+            {
+                Console.WriteLine($"Export problem with reason:{WarningMsg}");
+            }
         }
 
         static void PrepareParam()

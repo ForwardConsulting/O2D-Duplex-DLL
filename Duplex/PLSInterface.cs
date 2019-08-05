@@ -19,10 +19,10 @@ namespace Duplex
 
         private static clsLog log;
 
-        public PLSInterface(string ConnectionString)
+        public PLSInterface(String customDBconnectionString, String StdDBConnectionString)
         {
-            _conStr = ConnectionString;
-            log = new clsLog(_conStr);
+            _conStr = customDBconnectionString;
+            log = new clsLog(StdDBConnectionString);
         }
 
 
@@ -30,8 +30,9 @@ namespace Duplex
         public string ConStr { get => _conStr; set => _conStr = value; }
         public int OperationID { get => _operationID; set => _operationID = value; }
 
-        public void ExportData()
+        public bool ExportData(ref string WarningMsg)
         {
+            WarningMsg = string.Empty;
             Console.WriteLine($"Start Export Data to PLS");
             string procName = "proc_O2D_PLSInterface_4475";
             if (_DTOrderItemOpr == null)
@@ -54,27 +55,73 @@ namespace Duplex
                     }
 
                 }
+                WarningMsg = string.Empty;
                 log.LogProcessUpdate(_logID, DateTime.Now);
                 Console.WriteLine($"End of Export Data to PLS");
+                return true; 
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
+                string errmsg = ex.Message;
+                string showerrmsg = string.Empty;
                 try
                 {
-                    log.LogAlert(clsLog.Logger.PLSInterface, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.Interface, $"Unable to export plan to PLS {ex.Message}");
+                    Console.WriteLine($"Error found on ExportData:{errmsg}");
+                    log.LogAlert(clsLog.Logger.PLSInterface, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.Interface, $"Unable to export plan to PLS {errmsg}");
+                    if (IsRealError(errmsg, ref showerrmsg) == true)
+                    {
+                        WarningMsg = string.Empty;
+                        throw ex;
+                    }
+                    else
+                    {
+                        WarningMsg = showerrmsg;
+                        return false;
+                    }
+                    
                 }
                 catch (Exception ex1)
                 {
                     Console.WriteLine($"writing log has an error {ex1.Message}");
+                    return false;
                     //nothing to handle here
                 }
-                finally
-                {
-                    Console.WriteLine($"Error found on ExportData:{ex.Message}");
-                    throw new Exception($"Error on ExportData:{ex.Message }");
-                }
-                
+
             }
+        }
+
+
+        bool IsRealError(string ErrorMessage, ref string output)
+        {
+            string[] errmsg;
+            bool result = false;
+            //errmsg = ErrorMessage.Split(":");
+            errmsg = ErrorMessage.Split("\r");
+            if (errmsg.Length > 0) { ErrorMessage = errmsg[0]; }
+            errmsg = ErrorMessage.Split(":");
+            if (errmsg.Length < 2)
+            {
+                ErrorMessage = errmsg[0];
+            }
+            else
+            {
+                ErrorMessage = errmsg[1];
+            }
+
+            
+
+            if (ErrorMessage.ToLower().Contains("material") || ErrorMessage.ToLower().Contains("order")
+                || ErrorMessage.ToLower().Contains("request") || ErrorMessage.ToLower().Contains("logic") || ErrorMessage.ToLower().Contains("route") || ErrorMessage.ToLower().Contains("invent") || ErrorMessage.ToLower().Contains("equipment") || ErrorMessage.ToLower().Contains ("operation"))
+            {
+                result = false;
+            }
+            else
+            {
+                result = true;
+            }
+            output = ErrorMessage;
+            return result;
+
         }
         public void AddRow()
         {
