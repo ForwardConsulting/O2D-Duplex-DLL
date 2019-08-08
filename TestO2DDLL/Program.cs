@@ -219,8 +219,8 @@ namespace TestO2DDLL
             ConstrStd = t.GetConnectionString_Std();
             PLSInterface d = new PLSInterface(ConStrCustom,ConstrStd);
 
-            d.OperationID = 1000000048; d.AddRow();
-            d.OperationID = 1000000049; d.AddRow();
+            d.OperationID = 1000000110; d.AddRow();
+            //d.OperationID = 1000000049; d.AddRow();
             if (d.ExportData(ref WarningMsg) == false)
             {
                 Console.WriteLine($"Export problem with reason:{WarningMsg}");

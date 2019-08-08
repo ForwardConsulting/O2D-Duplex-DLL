@@ -192,9 +192,9 @@ namespace Duplex
                     log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.ConfirmATPCTP, $"Unable to Confirm ATCTP {errmsg}");
                     if (IsRealError(errmsg, ref showerrmsg) == true)
                     {
-                        WarningMsg = string.Empty;
-                        Console.WriteLine($"Error found on Request:{ex.Message}");
-                        throw ex;
+                        WarningMsg = errmsg;
+                        Console.WriteLine($"Error found on Request:{errmsg}");
+                        return false;
                     }
                     else
                     {

@@ -70,8 +70,8 @@ namespace Duplex
                     log.LogAlert(clsLog.Logger.PLSInterface, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.Interface, $"Unable to export plan to PLS {errmsg}");
                     if (IsRealError(errmsg, ref showerrmsg) == true)
                     {
-                        WarningMsg = string.Empty;
-                        throw ex;
+                        WarningMsg = errmsg;
+                        return false;
                     }
                     else
                     {
