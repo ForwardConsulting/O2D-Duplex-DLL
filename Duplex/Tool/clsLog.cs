@@ -21,7 +21,7 @@ namespace Duplex.Tool
         }
         public enum ProcessCategory
         {
-           RequestATPCTP,ConfirmATPCTP, Unspecified, Inventory, Order, ProductionPlan, Delivery,Interface
+           RequestATPCTP,ConfirmATPCTP, Unspecified, Inventory, Order, ProductionPlan, Delivery,Interface,RequestSplitItem,ConfirmSplitItem
         }
 
 

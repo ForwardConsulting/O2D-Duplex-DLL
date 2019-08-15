@@ -1,60 +1,44 @@
 ﻿using Duplex.Model;
 using Duplex.Tool;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace Duplex
 {
-    public class ATPCTP
+    public class SplitItem
     {
         private static clsLog log;
         private string _conStr;
         private DataSet _ds;
-        public clsDTOrder DTOrder = new clsDTOrder();
-        #region "Property"
-        public string ConStr
-        {
-            get
-            {
-                return _conStr;
-            }
-            set
-            {
-                _conStr = value;
-            }
-        }
 
-        #endregion
-        //public string ConStr { get => _conStr; set => _conStr = value; }
-
-
-        public ATPCTP(String customDBconnectionString, String StdDBConnectionString)
+        public SplitItem(String customDBconnectionString, String StdDBConnectionString)
         {
             ConStr = customDBconnectionString;
             log = new clsLog(StdDBConnectionString);
         }
-        /// <summary>
-        /// For caller to call for ATPCTP result.
-        /// </summary>
-        /// <param name="materialID"></param>
-        /// <param name=""></param>
-        /// <returns></returns>
-        //public DataSet Request(DataTable dtOrder, DataTable dtOrderItem, int atpCtpLogicId)
-        public DataSet Request(clsDTOrder dtOrder, clsDTOrderItem dtOrderItem, int atpCtpLogicId, ref string WarningMsg)
+
+        public SplitItem()
+        {
+        }
+
+        public string ConStr { get => _conStr; set => _conStr = value; }
+
+        public DataSet Request(clsDTSplitItem DtSplitItem, int UserID, ref string WarningMsg)
         {
             try
             {
                 WarningMsg = string.Empty;
                 Console.WriteLine("Start Request ...");
                 int logID;
-                logID = log.LogProcessInsert(clsLog.Logger.ATPCTP, clsLog.ProcessCategory.RequestATPCTP, "ATPCTP Request", DateTime.Now);
+                logID = log.LogProcessInsert(clsLog.Logger.Order, clsLog.ProcessCategory.RequestSplitItem, "SplitItem Request", DateTime.Now);
                 _ds = new DataSet();
-                string procName = "proc_DUP_ATPCTPRequestSelect_4096";
+                string procName = "proc_DUP_SplitItemRequest_4627";
                 DataTable dt1;
-                DataTable dt2;
-                dt1 = dtOrder.DT;
-                dt2 = dtOrderItem.DT;
+                dt1 = DtSplitItem.DT;
+
                 //ClsConnection con = new ClsConnection(_conStr);
 
                 using (SqlConnection con = new SqlConnection(_conStr))
@@ -65,9 +49,8 @@ namespace Duplex
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
                         cmd.CommandTimeout = 30;
-                        cmd.Parameters.AddWithValue("@DTOrder", dt1);
-                        cmd.Parameters.AddWithValue("@DTOrderItem", dt2);
-                        cmd.Parameters.AddWithValue("@ATPCTPLogicID", atpCtpLogicId);
+                        cmd.Parameters.AddWithValue("@DTOrderSplit", dt1);
+                        cmd.Parameters.AddWithValue("@UserID", UserID);
                         using (SqlDataAdapter sd = new SqlDataAdapter(cmd))
                         {
                             sd.Fill(_ds);
@@ -76,19 +59,11 @@ namespace Duplex
                     }
 
                 }
-                _ds.Tables[0].TableName = "DTOrderItem";
-                _ds.Tables[1].TableName = "DTOrderItemOperation";
-                _ds.Tables[2].TableName = "DTOrderItemOperationDetail";
+                _ds.Tables[0].TableName = "DTSplitItem";
+
                 log.LogProcessUpdate(logID, DateTime.Now);
                 WarningMsg = string.Empty;
-                Console.WriteLine("End ATPCTPRequest");
-                if (_ds.Tables.Count > 0)
-                {
-                    if (_ds.Tables[0].Rows.Count == 0 && WarningMsg == string.Empty)
-                    {
-                        WarningMsg = "No WIP found either in Balance inventory or Material Master";
-                    }
-                }
+                Console.WriteLine("End SplitItem Request");
                 return _ds;
             }
             catch (Exception ex)
@@ -97,9 +72,7 @@ namespace Duplex
                 string showerrmsg = string.Empty;
                 if (_ds != null)
                 {
-                    _ds.Tables[0].TableName = "DTOrderItem";
-                    _ds.Tables[1].TableName = "DTOrderItemOperation";
-                    _ds.Tables[2].TableName = "DTOrderItemOperationDetail";
+                    _ds.Tables[0].TableName = "DTSplitItem";
                 }
                 if (IsRealError(errmsg, ref showerrmsg) == true)
                 {
@@ -110,13 +83,6 @@ namespace Duplex
                 else
                 {
                     WarningMsg = showerrmsg;
-                    if (_ds.Tables.Count > 0)
-                    {
-                        if (_ds.Tables[0].Rows.Count == 0 && WarningMsg == string.Empty)
-                        {
-                            WarningMsg = "No WIP found either in Balance inventory or Material Master";
-                        }
-                    }
                     return _ds;
                 }
 
@@ -149,15 +115,16 @@ namespace Duplex
             return result;
 
         }
-        public bool Confirm(clsDTConfirm DTConfirm, int UserID, ref string WarningMsg)
+
+
+        public bool Confirm(int UserID, ref string WarningMsg)
         {
             try
             {
-                Console.WriteLine("Start Confirm ... ");
+                Console.WriteLine("Start Splititem Confirm ... ");
                 int logID;
-                logID = log.LogProcessInsert(clsLog.Logger.ATPCTP, clsLog.ProcessCategory.ConfirmATPCTP, "ATPCTP Confirm", DateTime.Now);
-                string procName = "proc_DUP_ConfirmATPCTP_4322";
-                DataTable DT1 = DTConfirm.DT;
+                logID = log.LogProcessInsert(clsLog.Logger.Order, clsLog.ProcessCategory.ConfirmSplitItem, "Split Confirm", DateTime.Now);
+                string procName = "proc_DUP_SplitItemConfirm_4628";
 
                 using (SqlConnection con = new SqlConnection(_conStr))
                 {
@@ -167,19 +134,13 @@ namespace Duplex
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
                         cmd.CommandTimeout = 30;
-                        SqlParameter dtc;
-                        dtc = cmd.Parameters.Add("@DTConfirm", SqlDbType.Structured);
-                        dtc.Value = DT1;
-                        dtc.TypeName = "dbo.DT_ConfirmATPCTP";
-
                         cmd.Parameters.AddWithValue("@UserID", UserID);
-
-                        cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery(); //nothing return to GUI
                     }
                 }
 
                 log.LogProcessUpdate(logID, DateTime.Now);
-                Console.WriteLine("End Confirm");
+                Console.WriteLine("End Confirm SplitItem");
                 return true;
             }
             catch (Exception ex)
@@ -189,16 +150,17 @@ namespace Duplex
                 WarningMsg = errmsg;
                 try
                 {
-                    log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.ConfirmATPCTP, $"Unable to Confirm ATCTP {errmsg}");
+                    log.LogAlert(clsLog.Logger.Order, clsLog.ErrorLevel.CriticalImapact, clsLog.ProcessCategory.ConfirmSplitItem, $"Unable to Confirm SplitItem {errmsg}");
                     if (IsRealError(errmsg, ref showerrmsg) == true)
                     {
                         WarningMsg = errmsg;
-                        Console.WriteLine($"Error found on Confirm ATPCTP:{errmsg}");
+                        Console.WriteLine($"Error found on Confirm SplitItem:{errmsg}");
                         return false;
                     }
                     else
                     {
                         WarningMsg = showerrmsg;
+                        return true;
                     }
                 }
                 catch (Exception)
@@ -207,13 +169,13 @@ namespace Duplex
                 }
                 finally
                 {
-                    Console.WriteLine($"Error found on Confirm {ex.Message}");
+                    Console.WriteLine($"Error found on Confirm SplitItem {ex.Message}");
                     throw ex;
                 }
 
             }
 
-
         }
     }
 }
+

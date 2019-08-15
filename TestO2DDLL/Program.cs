@@ -19,11 +19,12 @@ namespace TestO2DDLL
         static void Main(string[] args)
         {
             //testSFTP();
-            Main_TestPLSRelease();
+            //Main_TestPLSRelease();
             //Main_TestATPCTPRequest();
             //Main_TestATPCTPRequest2();
             //Main_TestATPCTPConfirm();
-            t1();
+            //t1();
+            Main_TestSplitItem();
         }
 
         static void t1()
@@ -32,6 +33,51 @@ namespace TestO2DDLL
 
         }
 
+        static void Main_TestSplitItem()
+        {
+            DataSet ds;
+            string Msg = string.Empty;
+            String ConStrCustom;
+            String ConstrStd;
+
+            Cls_Connection t = new Cls_Connection();
+            ConStrCustom = t.GetConnectionString_Custom();
+            ConstrStd = t.GetConnectionString_Std();
+
+            clsDTSplitItem dtInput = new clsDTSplitItem();
+            dtInput.OrderItemId = 1000000135;
+            dtInput.ItemNo = 10;
+            dtInput.RequestReamQty = 62;
+            //dtInput.RequestDate = null;
+            dtInput.AddRow();
+
+            dtInput.OrderItemId = -1;
+            //dtInput.ItemNo = null;
+            dtInput.RequestReamQty = 18;
+            dtInput.RequestDate =  DateTime.Parse("2019/8/19");
+            dtInput.AddRow();
+
+            SplitItem sp = new SplitItem(ConStrCustom, ConstrStd);
+            ds=sp.Request(dtInput,99, ref Msg);
+            
+            if (Msg.Length > 0)
+            {
+                Console.WriteLine($@"{Msg}");
+            }
+
+        }
+
+       static void Main_TestSplitConfirm()
+        {
+            string Msg = string.Empty;
+            SplitItem sp = new SplitItem();
+            sp.Confirm(99,ref Msg);
+            if (Msg.Length>0)
+            {
+                Console.WriteLine($@"{Msg}");
+            }
+
+        }
         static void testSFTP()
         {
             clsSFTP sftp = new clsSFTP();
