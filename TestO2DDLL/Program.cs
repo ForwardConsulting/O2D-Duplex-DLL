@@ -22,9 +22,9 @@ namespace TestO2DDLL
             //Main_TestPLSRelease();
             //Main_TestATPCTPRequest();
             //Main_TestATPCTPRequest2();
-            //Main_TestATPCTPConfirm();
+            Main_TestATPCTPConfirm();
             //t1();
-            Main_TestSplitItem();
+            //Main_TestSplitItem();
         }
 
         static void t1()
@@ -238,10 +238,10 @@ namespace TestO2DDLL
             ConstrStd = t.GetConnectionString_Std();
 
             d = new ATPCTP(ConStrCustom, ConstrStd);
-            clsDTConfirm DTConfirm = new clsDTConfirm { SolutionId = 2480, Quantity = 11 };
+            clsDTConfirm DTConfirm = new clsDTConfirm { SolutionId = 3296, Quantity = 35 };
             DTConfirm.AddRow();
 
-            if (d.Confirm(DTConfirm, UserID: 99, ref WarningMsg)==true)
+            if (d.Confirm(DTConfirm, UserID: 0, ref WarningMsg)==true)
             {
                 Console.WriteLine($"Confirm process is success");
             }

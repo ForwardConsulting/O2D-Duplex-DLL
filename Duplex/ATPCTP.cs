@@ -127,17 +127,24 @@ namespace Duplex
         {
             string[] errmsg;
             bool result = false;
-            errmsg = ErrorMessage.Split(":");
+            //errmsg = ErrorMessage.Split(":");
+            errmsg = ErrorMessage.Split("\r");
+            if (errmsg.Length > 0)
+            { ErrorMessage = errmsg[0]; }
+            else { errmsg = ErrorMessage.Split(":"); }
+
             if (errmsg.Length < 2)
             {
                 output = string.Empty;
                 return false;
             }
 
-            ErrorMessage = errmsg[1];
+            //ErrorMessage = errmsg[1];
 
             if (ErrorMessage.ToLower().Contains("material") || ErrorMessage.ToLower().Contains("order")
-                || ErrorMessage.ToLower().Contains("request") || ErrorMessage.ToLower().Contains("logic") || ErrorMessage.ToLower().Contains("route") || ErrorMessage.ToLower().Contains("invent"))
+                || ErrorMessage.ToLower().Contains("request") || ErrorMessage.ToLower().Contains("logic") || ErrorMessage.ToLower().Contains("route") || ErrorMessage.ToLower().Contains("invent")
+                || ErrorMessage.ToLower().Contains("item"))
+                
             {
                 result = false;
             }
@@ -182,7 +189,7 @@ namespace Duplex
                 Console.WriteLine("End Confirm");
                 return true;
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 string errmsg = ex.Message;
                 string showerrmsg = string.Empty;
