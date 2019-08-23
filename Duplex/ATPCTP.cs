@@ -139,7 +139,6 @@ namespace Duplex
                 return false;
             }
 
-            //ErrorMessage = errmsg[1];
 
             if (ErrorMessage.ToLower().Contains("material") || ErrorMessage.ToLower().Contains("order")
                 || ErrorMessage.ToLower().Contains("request") || ErrorMessage.ToLower().Contains("logic") || ErrorMessage.ToLower().Contains("route") || ErrorMessage.ToLower().Contains("invent")
@@ -206,17 +205,15 @@ namespace Duplex
                     else
                     {
                         WarningMsg = showerrmsg;
+                        return false;
                     }
                 }
                 catch (Exception)
                 {
                     //nothing
-                }
-                finally
-                {
-                    Console.WriteLine($"Error found on Confirm {ex.Message}");
                     throw ex;
                 }
+            
 
             }
 
