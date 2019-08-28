@@ -49,7 +49,7 @@ namespace Duplex
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
-                        cmd.CommandTimeout = 30;
+                        cmd.CommandTimeout = 180;
                         cmd.Parameters.AddWithValue("@DTRefID", _DTOrderItemOpr);
                         cmd.ExecuteNonQuery();
                     }

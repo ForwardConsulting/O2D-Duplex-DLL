@@ -42,7 +42,7 @@ namespace Duplex.Model
         public string Remark { get => _remark; set => _remark = value; }
         public DateTime InsertDate { get => _insertDate; set => _insertDate = value; }
         public DateTime UpdateDate { get => _updateDate; set => _updateDate = value; }
-        public int InsertUserID { get => _userID; set => _userID = value; }
+        public int UserID { get => _userID; set => _userID = value; }
         public DataTable DT { get => _dt; }
 
         public void AddRow()

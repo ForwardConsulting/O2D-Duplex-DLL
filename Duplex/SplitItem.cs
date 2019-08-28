@@ -48,7 +48,7 @@ namespace Duplex
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
-                        cmd.CommandTimeout = 30;
+                        cmd.CommandTimeout = 180;
                         cmd.Parameters.AddWithValue("@DTOrderSplit", dt1);
                         cmd.Parameters.AddWithValue("@UserID", UserID);
                         using (SqlDataAdapter sd = new SqlDataAdapter(cmd))
@@ -93,17 +93,15 @@ namespace Duplex
         {
             string[] errmsg;
             bool result = false;
-            errmsg = ErrorMessage.Split(":");
-            if (errmsg.Length < 2)
-            {
-                output = string.Empty;
-                return false;
-            }
+            errmsg = ErrorMessage.Split("\r");
+            if (errmsg.Length > 0)
+            { ErrorMessage = errmsg[0]; }
+            else { errmsg = ErrorMessage.Split(":"); }
 
-            ErrorMessage = errmsg[1];
 
             if (ErrorMessage.ToLower().Contains("material") || ErrorMessage.ToLower().Contains("order")
-                || ErrorMessage.ToLower().Contains("request") || ErrorMessage.ToLower().Contains("logic") || ErrorMessage.ToLower().Contains("route") || ErrorMessage.ToLower().Contains("invent"))
+                         || ErrorMessage.ToLower().Contains("request") || ErrorMessage.ToLower().Contains("logic") || ErrorMessage.ToLower().Contains("route") || ErrorMessage.ToLower().Contains("invent")
+                         || ErrorMessage.ToLower().Contains("item"))
             {
                 result = false;
             }
@@ -133,7 +131,7 @@ namespace Duplex
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
-                        cmd.CommandTimeout = 30;
+                        cmd.CommandTimeout = 180;
                         cmd.Parameters.AddWithValue("@UserID", UserID);
                         cmd.ExecuteNonQuery(); //nothing return to GUI
                     }

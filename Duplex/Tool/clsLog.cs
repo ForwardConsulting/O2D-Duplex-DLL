@@ -42,6 +42,10 @@ namespace Duplex.Tool
             try
             {
                 string strSql;
+                if (Message.Length > 2000)
+                {
+                    Message = Message.Substring(0, 2000);
+                }
                 ClsConnection con = new ClsConnection(_conStr);
                 strSql = $"Insert into DT_LogAlert(LoggerModule,CriticalLevel,Category,Description" +
                     $",InsertDate,UpdateDate,InsertUserID,UpdateUserID)" +

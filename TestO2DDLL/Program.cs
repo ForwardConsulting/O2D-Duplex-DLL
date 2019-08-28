@@ -18,13 +18,21 @@ namespace TestO2DDLL
 
         static void Main(string[] args)
         {
+            DateTime startDate;
+            DateTime endDate;
+            int Diffmin = 0;
+            startDate = DateTime.Now;
+            Console.WriteLine($@"Start on {startDate}");
             //testSFTP();
             //Main_TestPLSRelease();
-            //Main_TestATPCTPRequest();
+            Main_TestATPCTPRequest();
             //Main_TestATPCTPRequest2();
-            Main_TestATPCTPConfirm();
+            //Main_TestATPCTPConfirm();
             //t1();
             //Main_TestSplitItem();
+
+            endDate = DateTime.Now;
+            Console.WriteLine($@"End on {endDate}");
         }
 
         static void t1()
@@ -45,20 +53,20 @@ namespace TestO2DDLL
             ConstrStd = t.GetConnectionString_Std();
 
             clsDTSplitItem dtInput = new clsDTSplitItem();
-            dtInput.OrderItemId = 1000000135;
+            dtInput.OrderItemId = 1000001131;
             dtInput.ItemNo = 10;
-            dtInput.RequestReamQty = 62;
-            //dtInput.RequestDate = null;
+            dtInput.RequestReamQty = 23;
+            dtInput.RequestDate = DateTime.Parse("2019/8/31");
             dtInput.AddRow();
 
             dtInput.OrderItemId = -1;
-            //dtInput.ItemNo = null;
-            dtInput.RequestReamQty = 18;
-            dtInput.RequestDate =  DateTime.Parse("2019/8/19");
+            dtInput.ItemNo = 0;
+            dtInput.RequestReamQty = 20;
+            dtInput.RequestDate =  DateTime.Parse("2019/8/29");
             dtInput.AddRow();
 
             SplitItem sp = new SplitItem(ConStrCustom, ConstrStd);
-            ds=sp.Request(dtInput,99, ref Msg);
+            ds=sp.Request(dtInput,0, ref Msg);
             
             if (Msg.Length > 0)
             {
@@ -163,7 +171,7 @@ namespace TestO2DDLL
                 ContractID = 0,
                 RequestQTY_OrdU = 10,
                 RequestDate = new DateTime(2019, 8, 9),
-                InsertUserID = UserID
+                UserID = UserID
             };
             dtOrderItem.AddRow();
 
@@ -195,26 +203,29 @@ namespace TestO2DDLL
         {
             String ConStrCustom;
             String ConstrStd;
+            int @UserID;
+
+            UserID = 0;
 
             Cls_Connection t = new Cls_Connection();
             ConStrCustom = t.GetConnectionString_Custom();
             ConstrStd = t.GetConnectionString_Std();
-            DateTime OrderreqDate = DateTime.Today.AddDays(1d);
+            DateTime OrderreqDate = DateTime.Parse("2019/8/31"); //DateTime.Today.AddDays(1d);
 
             d = new ATPCTP(ConStrCustom, ConstrStd);
 
 
-            clsDTOrder dtOrder = new clsDTOrder { Id = -1, Ordernumber = "Order-xxx", OrderHierarchyID = 2, BillToID = 1000036, PoNumber = "PO-xxx", ShipToID = 222, ContractID = 123, Remark = "Test Remark", UserID = 9 };
+            clsDTOrder dtOrder = new clsDTOrder { Id = 1000000290, Ordernumber = "TON19082401", OrderHierarchyID = 1000000065, BillToID = 1000036, PoNumber = "PO-xxx", ShipToID = 222, ContractID = 123, Remark = "Test Remark", UserID = UserID };
             dtOrder.AddRow();
 
-            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = -1, ItemNumber = 10, MaterialID = 1000000034, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = OrderreqDate };
+            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = 1000000290, ItemNumber = 10, MaterialID = 1000009520, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 19, RequestDate = OrderreqDate,UserID=UserID };
             dtOrderItem.AddRow();
 
-            //ds = d.Request(1, 10, new DateTime (2019,6/7), 1, 0);
+            //ds = d.Request(1, 10, new DateTime (2019,6/7), 1, 0); old one 1000009524 
             try
             {
                 string ErrMsg = String.Empty;
-                ds = d.Request(dtOrder, dtOrderItem, 1000000002, ref ErrMsg);
+                ds = d.Request(dtOrder, dtOrderItem, 1000000006, ref ErrMsg);
 
                 Console.WriteLine("done for " + ConStrCustom);
             }

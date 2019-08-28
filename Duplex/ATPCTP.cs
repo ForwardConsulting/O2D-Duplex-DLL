@@ -50,6 +50,7 @@ namespace Duplex
                 int logID;
                 logID = log.LogProcessInsert(clsLog.Logger.ATPCTP, clsLog.ProcessCategory.RequestATPCTP, "ATPCTP Request", DateTime.Now);
                 _ds = new DataSet();
+                LogInputParameter(dtOrder,dtOrderItem,atpCtpLogicId);
                 string procName = "proc_DUP_ATPCTPRequestSelect_4096";
                 DataTable dt1;
                 DataTable dt2;
@@ -64,7 +65,7 @@ namespace Duplex
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
-                        cmd.CommandTimeout = 30;
+                        cmd.CommandTimeout = 180;
                         cmd.Parameters.AddWithValue("@DTOrder", dt1);
                         cmd.Parameters.AddWithValue("@DTOrderItem", dt2);
                         cmd.Parameters.AddWithValue("@ATPCTPLogicID", atpCtpLogicId);
@@ -89,6 +90,7 @@ namespace Duplex
                         WarningMsg = "No WIP found either in Balance inventory or Material Master";
                     }
                 }
+                LogOutputResult(_ds);
                 return _ds;
             }
             catch (Exception ex)
@@ -123,6 +125,72 @@ namespace Duplex
             }
 
         }
+
+        private void LogOutputResult(DataSet ds)
+        {
+            try
+            {
+                string tmpStr = string.Empty;
+                string headerMsg = string.Empty;
+                foreach (DataTable DT in _ds.Tables)
+                {
+                    headerMsg = $@"Table {DT.TableName} => ";
+                    foreach (DataRow DR in DT.Rows )
+                    {
+                        tmpStr = string.Empty;
+                        foreach (DataColumn DC in DT.Columns)
+                        {
+                            tmpStr += $@" {DC.ColumnName}:{DR[DC.ColumnName]},";
+                        }
+                        if (tmpStr.Length > 2000)
+                        {
+                            tmpStr = tmpStr.Substring(0, 1900);
+                        }
+                        log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.NoImpact, clsLog.ProcessCategory.RequestATPCTP, $@"{headerMsg}{tmpStr}");
+                    }
+                 
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($@"Error on LogOutputResult:{ex.Message}");
+            }
+        }
+
+        private void LogInputParameter(clsDTOrder dtOrder, clsDTOrderItem dtOrderItem, int atpCtpLogicId)
+        {
+            try
+            {
+                string tmpLog =string.Empty ;
+                tmpLog = "Order Level => ";
+                foreach (DataRow DR in dtOrder.DT.Rows)
+                {
+                    foreach (DataColumn DC in dtOrder.DT.Columns)
+                    {
+                        tmpLog += $@" {DC.ColumnName}: {DR[DC.ColumnName]},";
+                    }
+                }
+                log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.NoImpact, clsLog.ProcessCategory.RequestATPCTP, tmpLog);
+
+                tmpLog = "OrderItem Level => ";
+                foreach (DataRow DR in dtOrderItem.DT.Rows)
+                {
+                    foreach (DataColumn DC in dtOrderItem.DT.Columns)
+                    {
+                        tmpLog += $@" {DC.ColumnName}: {DR[DC.ColumnName]},";
+                    }
+                }
+                log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.NoImpact, clsLog.ProcessCategory.RequestATPCTP, tmpLog);
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($@"Error on LogInputParameter:{ex.Message}");
+            }
+        }
+
         bool IsRealError(string ErrorMessage, ref string output)
         {
             string[] errmsg;
@@ -172,7 +240,7 @@ namespace Duplex
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = procName;
-                        cmd.CommandTimeout = 30;
+                        cmd.CommandTimeout = 180;
                         SqlParameter dtc;
                         dtc = cmd.Parameters.Add("@DTConfirm", SqlDbType.Structured);
                         dtc.Value = DT1;
