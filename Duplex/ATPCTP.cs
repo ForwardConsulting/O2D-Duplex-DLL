@@ -50,7 +50,7 @@ namespace Duplex
                 int logID;
                 logID = log.LogProcessInsert(clsLog.Logger.ATPCTP, clsLog.ProcessCategory.RequestATPCTP, "ATPCTP Request", DateTime.Now);
                 _ds = new DataSet();
-                LogInputParameter(dtOrder,dtOrderItem,atpCtpLogicId);
+                LogInputParameter(dtOrder, dtOrderItem, atpCtpLogicId);
                 string procName = "proc_DUP_ATPCTPRequestSelect_4096";
                 DataTable dt1;
                 DataTable dt2;
@@ -135,7 +135,7 @@ namespace Duplex
                 foreach (DataTable DT in _ds.Tables)
                 {
                     headerMsg = $@"Table {DT.TableName} => ";
-                    foreach (DataRow DR in DT.Rows )
+                    foreach (DataRow DR in DT.Rows)
                     {
                         tmpStr = string.Empty;
                         foreach (DataColumn DC in DT.Columns)
@@ -148,7 +148,7 @@ namespace Duplex
                         }
                         log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.NoImpact, clsLog.ProcessCategory.RequestATPCTP, $@"{headerMsg}{tmpStr}");
                     }
-                 
+
                 }
 
             }
@@ -162,7 +162,7 @@ namespace Duplex
         {
             try
             {
-                string tmpLog =string.Empty ;
+                string tmpLog = string.Empty;
                 tmpLog = "Order Level => ";
                 foreach (DataRow DR in dtOrder.DT.Rows)
                 {
@@ -201,17 +201,22 @@ namespace Duplex
             { ErrorMessage = errmsg[0]; }
             else { errmsg = ErrorMessage.Split(":"); }
 
+            if (ErrorMessage.Contains(":"))
+            {
+                errmsg = ErrorMessage.Split(":");
+            }
             if (errmsg.Length < 2)
             {
                 output = string.Empty;
                 return false;
             }
+            else { ErrorMessage = errmsg[1]; }
 
 
             if (ErrorMessage.ToLower().Contains("material") || ErrorMessage.ToLower().Contains("order")
                 || ErrorMessage.ToLower().Contains("request") || ErrorMessage.ToLower().Contains("logic") || ErrorMessage.ToLower().Contains("route") || ErrorMessage.ToLower().Contains("invent")
                 || ErrorMessage.ToLower().Contains("item"))
-                
+
             {
                 result = false;
             }
@@ -281,11 +286,33 @@ namespace Duplex
                     //nothing
                     throw ex;
                 }
-            
+
 
             }
 
 
         }
+
+        public void LogConfirmInput(DataTable DT)
+        {
+            try
+            {
+                string tmpLog = string.Empty;
+                tmpLog = "Confirm Param => ";
+                foreach (DataRow DR in DT.Rows)
+                {
+                    foreach (DataColumn DC in DT.Columns)
+                    {
+                        tmpLog += $@" {DC.ColumnName}: {DR[DC.ColumnName]},";
+                    }
+                }
+                log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.NoImpact, clsLog.ProcessCategory.ConfirmATPCTP, tmpLog);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
     }
 }

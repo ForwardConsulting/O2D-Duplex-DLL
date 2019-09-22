@@ -9,7 +9,7 @@ namespace Duplex.Model
     {
         private int _orderItemId;
         private int? _itemNo;
-        private int _requestReamQty;
+        private decimal _requestReamQty;
         private DateTime? _requestDate;
         private DataTable _dt;
         /*_requestDate is Nullable type but user must not input null, just skip it. If caller try to input Null, the error will show up because dataset is not allow null.
@@ -17,7 +17,7 @@ namespace Duplex.Model
 
         public int OrderItemId { get => _orderItemId; set => _orderItemId = value; }
         public int? ItemNo { get => _itemNo; set => _itemNo = value; }
-        public int RequestReamQty { get => _requestReamQty; set => _requestReamQty = value; }
+        public decimal RequestReamQty { get => _requestReamQty; set => _requestReamQty = value; }
         public DateTime? RequestDate { get => _requestDate; set => _requestDate = value; }
         public DataTable DT { get => _dt; }
 
@@ -52,7 +52,7 @@ namespace Duplex.Model
             {
                 new DataColumn("OrderItemID",typeof(int)),
                 new DataColumn("ItemNo",typeof(int)),
-                new DataColumn("RequestReamQty",typeof(int)),
+                new DataColumn("RequestReamQty",typeof(decimal)),
                 new DataColumn("RequestDate",typeof(DateTime)),
                 new DataColumn("ConfirmDate",typeof(DateTime)),
             };

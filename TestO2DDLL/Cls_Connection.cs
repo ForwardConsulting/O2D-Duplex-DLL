@@ -10,9 +10,9 @@ namespace TestO2DDLL
         {
             string conStr = string.Empty;
             //conStr = "Data Source=203.154.67.28,1433;Initial Catalog=O2D_Dup;Timeout=30;User Id=O2DDUPLEX;Password=4Ward;MultipleActiveResultSets=True;Application Name=O2D;";
-            //conStr = "Data Source=203.154.67.28,1433;database=O2D_Dup;Timeout=30;User Id=O2DDUPLEX;Password=4Ward;MultipleActiveResultSets=True;Application Name=O2D;";
+            conStr = "Data Source=203.154.67.28,1433;database=O2D_Dup;Timeout=30;User Id=O2DDUPLEX;Password=4Ward;MultipleActiveResultSets=True;Application Name=O2D;";
 
-            conStr = "Data Source=10.28.58.103,1433;database=O2D_Dup;Timeout=30;User Id=O2D;Password=O2D#2019;MultipleActiveResultSets=True;Application Name=O2D;";
+            //conStr = "Data Source=10.28.58.103,1433;database=O2D_Dup;Timeout=30;User Id=O2D;Password=O2D#2019;MultipleActiveResultSets=True;Application Name=O2D;";
 
 
             return conStr;
@@ -21,9 +21,9 @@ namespace TestO2DDLL
         {
             string conStr = string.Empty;
             //conStr = "Data Source=203.154.67.28,1433;Initial Catalog=O2D_Dup;Timeout=30;User Id=O2DDUPLEX;Password=4Ward;MultipleActiveResultSets=True;Application Name=O2D;";
-            //conStr = "Data Source=203.154.67.28,1433;database=O2D;Timeout=30;User Id=O2DDUPLEX;Password=4Ward;MultipleActiveResultSets=True;Application Name=O2D;";
+            conStr = "Data Source=203.154.67.28,1433;database=O2D;Timeout=30;User Id=O2DDUPLEX;Password=4Ward;MultipleActiveResultSets=True;Application Name=O2D;";
 
-            conStr = "Data Source=10.28.58.103,1433;database=O2D;Timeout=30;User Id=O2D;Password=O2D#2019;MultipleActiveResultSets=True;Application Name=O2D;";
+            //conStr = "Data Source=10.28.58.103,1433;database=O2D;Timeout=30;User Id=O2D;Password=O2D#2019;MultipleActiveResultSets=True;Application Name=O2D;";
 
 
             return conStr;

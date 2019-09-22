@@ -25,14 +25,81 @@ namespace TestO2DDLL
             Console.WriteLine($@"Start on {startDate}");
             //testSFTP();
             //Main_TestPLSRelease();
-            Main_TestATPCTPRequest();
+            //Main_TestATPCTPRequest();
             //Main_TestATPCTPRequest2();
             //Main_TestATPCTPConfirm();
             //t1();
             //Main_TestSplitItem();
-
+            Main_TestATPCTPForceUpdate();
             endDate = DateTime.Now;
             Console.WriteLine($@"End on {endDate}");
+        }
+
+        static void Main_TestATPCTPForceUpdate()
+        {
+            String ConStrCustom;
+            String ConstrStd;
+            int UserID = 0;
+
+            Cls_Connection t = new Cls_Connection();
+            ConStrCustom = t.GetConnectionString_Custom();
+            ConstrStd = t.GetConnectionString_Std();
+            DateTime OrderreqDate = DateTime.Today.AddDays(5d);
+
+            d = new ATPCTP(ConStrCustom, ConstrStd);
+
+
+
+            clsDTOrder dtOrder = new clsDTOrder
+            {
+                Id = 1000000290,
+                Ordernumber = "TON19082401",
+                OrderHierarchyID = 1000000065,
+                BillToID = 3,
+                PoNumber = "po-ssss",
+                ShipToID = 0,
+                ContractID = 0,
+                Remark = "Test Remark",
+                UserID = UserID
+            };
+            dtOrder.AddRow();
+
+            clsDTOrderItem dtOrderItem = new clsDTOrderItem
+            {
+                Id = 1000001305,
+                OrderID = 1000000290,
+                ItemNumber = 10,
+                MaterialID = 1000009605,
+                ShiptoID = 0,
+                ContractID = 0,
+                RequestQTY_OrdU = 60,
+                RequestDate = OrderreqDate,
+                UserID = UserID
+            };
+            dtOrderItem.AddRow();
+
+
+            try
+            {
+                string ErrMsg = string.Empty;
+                ds = d.Request(dtOrder, dtOrderItem, 1000000008, ref ErrMsg);
+                if (ErrMsg.Length > 0)
+                {
+                    Console.WriteLine($"Warning:{ErrMsg}");
+                }
+                else
+                {
+                    Console.WriteLine("done for " + ConStrCustom);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error found:" + ex.Message);
+            }
+
+
+
         }
 
         static void t1()
@@ -53,16 +120,16 @@ namespace TestO2DDLL
             ConstrStd = t.GetConnectionString_Std();
 
             clsDTSplitItem dtInput = new clsDTSplitItem();
-            dtInput.OrderItemId = 1000001131;
+            dtInput.OrderItemId = 1000000245;
             dtInput.ItemNo = 10;
-            dtInput.RequestReamQty = 23;
-            dtInput.RequestDate = DateTime.Parse("2019/8/31");
+            dtInput.RequestReamQty = 40;
+           // dtInput.RequestDate = DateTime.Parse("2019/9/7");
             dtInput.AddRow();
 
             dtInput.OrderItemId = -1;
             dtInput.ItemNo = 0;
-            dtInput.RequestReamQty = 20;
-            dtInput.RequestDate =  DateTime.Parse("2019/8/29");
+            dtInput.RequestReamQty = 40;
+            dtInput.RequestDate =  DateTime.Parse("2019/9/7");
             dtInput.AddRow();
 
             SplitItem sp = new SplitItem(ConStrCustom, ConstrStd);
@@ -205,12 +272,12 @@ namespace TestO2DDLL
             String ConstrStd;
             int @UserID;
 
-            UserID = 0;
+            UserID = 99;
 
             Cls_Connection t = new Cls_Connection();
             ConStrCustom = t.GetConnectionString_Custom();
             ConstrStd = t.GetConnectionString_Std();
-            DateTime OrderreqDate = DateTime.Parse("2019/8/31"); //DateTime.Today.AddDays(1d);
+            DateTime OrderreqDate = DateTime.Today.AddDays(-1); // DateTime.Parse("2019/8/31"); //DateTime.Today.AddDays(1d);
 
             d = new ATPCTP(ConStrCustom, ConstrStd);
 
@@ -218,14 +285,14 @@ namespace TestO2DDLL
             clsDTOrder dtOrder = new clsDTOrder { Id = 1000000290, Ordernumber = "TON19082401", OrderHierarchyID = 1000000065, BillToID = 1000036, PoNumber = "PO-xxx", ShipToID = 222, ContractID = 123, Remark = "Test Remark", UserID = UserID };
             dtOrder.AddRow();
 
-            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = 1000000290, ItemNumber = 10, MaterialID = 1000009520, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 19, RequestDate = OrderreqDate,UserID=UserID };
+            clsDTOrderItem dtOrderItem = new clsDTOrderItem { Id = -1, OrderID = 1000000290, ItemNumber = 10, MaterialID = 1000009520, ShiptoID = 111, ContractID = 222, RequestQTY_OrdU = 20, RequestDate = OrderreqDate,UserID=UserID };
             dtOrderItem.AddRow();
 
             //ds = d.Request(1, 10, new DateTime (2019,6/7), 1, 0); old one 1000009524 
             try
             {
                 string ErrMsg = String.Empty;
-                ds = d.Request(dtOrder, dtOrderItem, 1000000006, ref ErrMsg);
+                ds = d.Request(dtOrder, dtOrderItem, 1000000002, ref ErrMsg);
 
                 Console.WriteLine("done for " + ConStrCustom);
             }

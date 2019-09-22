@@ -38,6 +38,7 @@ namespace Duplex
                 string procName = "proc_DUP_SplitItemRequest_4627";
                 DataTable dt1;
                 dt1 = DtSplitItem.DT;
+                LogInputParameter(DtSplitItem);
 
                 //ClsConnection con = new ClsConnection(_conStr);
 
@@ -64,6 +65,7 @@ namespace Duplex
                 log.LogProcessUpdate(logID, DateTime.Now);
                 WarningMsg = string.Empty;
                 Console.WriteLine("End SplitItem Request");
+                LogOutputResult(_ds);
                 return _ds;
             }
             catch (Exception ex)
@@ -89,6 +91,62 @@ namespace Duplex
             }
 
         }
+
+        private void LogOutputResult(DataSet ds)
+        {
+            try
+            {
+                string tmpStr = string.Empty;
+                string headerMsg = string.Empty;
+                foreach (DataTable DT in _ds.Tables)
+                {
+                    headerMsg = $@"Table {DT.TableName} => ";
+                    foreach (DataRow DR in DT.Rows)
+                    {
+                        tmpStr = string.Empty;
+                        foreach (DataColumn DC in DT.Columns)
+                        {
+                            tmpStr += $@" {DC.ColumnName}:{DR[DC.ColumnName]},";
+                        }
+                        if (tmpStr.Length > 2000)
+                        {
+                            tmpStr = tmpStr.Substring(0, 1900);
+                        }
+                        log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.NoImpact, clsLog.ProcessCategory.RequestSplitItem, $@"{headerMsg}{tmpStr}");
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($@"Error on LogOutputResult:{ex.Message}");
+            }
+        }
+
+        private void LogInputParameter(clsDTSplitItem dtSplitItem)
+        {
+            try
+            {
+                string tmpLog = string.Empty;
+                tmpLog = "Order Item => ";
+                foreach (DataRow DR in dtSplitItem.DT.Rows)
+                {
+                    foreach (DataColumn DC in dtSplitItem.DT.Columns)
+                    {
+                        tmpLog += $@" {DC.ColumnName}: {DR[DC.ColumnName]},";
+                    }
+                }
+                log.LogAlert(clsLog.Logger.ATPCTP, clsLog.ErrorLevel.NoImpact, clsLog.ProcessCategory.RequestSplitItem, tmpLog);
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($@"Error on LogInputParameter:{ex.Message}");
+            }
+        }
+
         bool IsRealError(string ErrorMessage, ref string output)
         {
             string[] errmsg;
